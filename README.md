@@ -226,7 +226,7 @@ for epoch in range(num_train_epochs):
 
 Finally we train the model and used *Perplexity* as the metric for evaluating the trained models. The lower the *Perplexity* the better the model.
 The model directory is *MLP_TrainedModels* where the trained models are stored. 
-**Note:** The full training code is ![here](train_masked_language_model.py)
+**Note:** The full training code is [here](https://github.com/ayoolaolafenwa/TrainNLP/blob/main/train_masked_language_model.py)
 
 ### Test the model
 
