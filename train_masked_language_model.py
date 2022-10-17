@@ -1,34 +1,16 @@
-# Build A Masked Language Model with Transformers
-This is a step by step guide using hugging face transformers to create a Masked Language Model to predict a masked word in a sentence.
-
-* Install neccessary packages
-```
-pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
-
-pip3 install transformers
-
-pip3 install datasets
-
-pip3 install accelerate
-```
-
-### Working with Bert Encoder Network
-There are different network branches in transformers ranging from encoders like Bert, autoregressive networks like Bart to sequence to sequence networks like GPT. 
- 
-
-* Bert
-It is a bidirectional transformer network that takes in corpus, generates a sequence of feature vectors for each word in a text. Bert uses its self attention mecahnism to study the contextual and semantic meaning of a sentence to predict a masked word in a sentence or classify the sentiment of a sentence in sentiment analysis. For example a sentence like *The [MASK] is happy.* is passed into a bert network to predict the missing masked word in the middle of the sentence. The network considers the semantic and syntactic meaning of both the left and right sides of the masked word to generate the appropriate word to fill in the blanked space. The predicted masked word must align around a living thing like person or animal, for example the full sentence  after the prediction of the masked word can be *The student is happy.* or the *The dog is  happy.* Understanding the context and the grammatical meaning of a sentence is very important for good result, because the model predicting the masked as an inanimate object like car or house such as *The house is happy* is completely wrong. In this tutorial Bert will be used to train a Masked Language Model. 
-
-### Train A Masked Language Model ON IMDB Dataset
-IMDB dataset is a popular dataset for benchmarking sentiment analysis and we shall finetune a pretrained distilbert model on the IMDB dataset to create a masked language model. 
-Distilbert is a light variant of Bert. 
-
-### Tokenize The Dataset
-
-``` python
-
 from datasets import load_dataset
 from transformers import AutoTokenizer
+from transformers import DataCollatorForLanguageModeling
+
+from torch.utils.data import DataLoader
+from transformers import AutoModelForMaskedLM
+from torch.optim import AdamW
+from accelerate import Accelerator
+from transformers import get_scheduler
+from transformers import default_data_collator
+from tqdm.auto import tqdm
+import math
+
 
 #load imdb dataset
 imdb_data = load_dataset("imdb")
@@ -48,15 +30,8 @@ def tokenize_function(data):
 
 # batched is set to True to activate fast multithreading!
 tokenize_dataset = imdb_data.map(tokenize_function, batched = True, remove_columns = ["text", "label"])
-```
 
-* Line 3-8: We loaded the IMDB dataset and used the tokenizer from distilbert pretrained model. Bert uses word piece algorithm as its tokenizer
-to convert words into ids. 
-* Line 10-15: We defined a tokenize function using the loaded distilbert tokenizer to tokenize the imdb dataset 
 
-### Concatenate and Chunk Dataset
-
-``` python
 def group_texts(data):
     chunk_size = 128
     # concatenate texts
@@ -80,14 +55,8 @@ def group_texts(data):
     return result
 
 processed_dataset = tokenize_dataset.map(group_texts, batched = True)
-```
-* line 1-10: In Natural Language Processing we need to set a bench mark for text sequences length to be trained, the maximum length for bert pretrained model to be used is 512. 
-We concatenate all the text sequences in the dataset, set a chunk size of *128* and divide this concatenated text into chunks according to the maximum length of the pretrained model. We used a chunk size of *128* instead of *512* because of gpu utilization. If a very powerful gpu is available 512 should be used. 
 
-### Dataset Masking 
 
-``` python
-from transformers import DataCollatorForLanguageModeling
 
 ''' Downsample the dataset to 10000 samples for training to for low gpu consumption'''
 train_size = 10000
@@ -124,21 +93,8 @@ eval_dataset = eval_dataset.rename_columns(
         "masked_labels": "labels",
     }
 )
-```
-
-* Line 2-20: We downsample the dataset to 10000 text samples and used 10% of the train dataset as test dataset which is 1000.  We also randomly masked the test dataset, replaced the unmasked columns in the test dataset with masked columns.
 
 
-###  Prepare Training Procedure
-
-``` python
-
-from torch.utils.data import DataLoader
-from transformers import AutoModelForMaskedLM
-from torch.optim import AdamW
-from accelerate import Accelerator
-from transformers import get_scheduler
-from transformers import default_data_collator
 
 # set batch size to 16, a larger bacth size when using a more powerful gpu
 batch_size = 16
@@ -166,19 +122,13 @@ num_training_steps = num_train_epochs * num_update_steps_per_epoch
 
 # define the learning rate scheduler for training
 lr_scheduler = get_scheduler("linear",optimizer=optimizer,num_warmup_steps=0,num_training_steps=num_training_steps)
-```
-* Line 1-12: This part is very similar to the normal procedure used in pytorch to train a model. Pytorch *DataLoader* is used to load processed train and test datasets, pytorch optimizer to set the optimizer for training model, used transformers inbuilt model loader to load the distilbert model, transformers inbuilt learning rate scheduler to set the learning rate for training and prepare all the parameters, train and evaluation datasets with transformers accelerator for training.
 
-### Train Dataset
-
-``` python
 import torch
-from tqdm.auto import tqdm
 
 progress_bar = tqdm(range(num_training_steps))
 
-# directory to save the models
-output_dir = "MLP_TrainedModels"
+model_name = "MLP_TrainedModels"
+output_dir = model_name
 
 for epoch in range(num_train_epochs):
     # Training
@@ -221,52 +171,5 @@ for epoch in range(num_train_epochs):
     unwrapped_model.save_pretrained(output_dir, save_function=accelerator.save)
     if accelerator.is_main_process:
         tokenizer.save_pretrained(output_dir)
-
-```
-
-Finally we train the model and used *Perplexity* as the metric for evaluating the trained models. The lower the *Perplexity* the better the model.
-The model directory is *MLP_TrainedModels* where the trained models are stored. 
-**Note:** The full training code is ![here](train_masked_language_model.py)
-
-### Test the model
-
-``` python
-from transformers import pipeline
-
-pred_model = pipeline("fill-mask", model = "MLP_TrainedModels")
-
-text = "This is an [MASK] movie."
-
-preds = pred_model(text)
-
-for pred in preds:
-    print(f">>> {pred['sequence']}")
-```
-
-The trained models are stored in *MLP_TrainedModels* and paste the directory to set the model value.
-We print out a list of generated sentences from the model with the appropriate value for the masked word in the sentence. 
-* Output
-```
->>> this is an excellent movie.
->>> this is an amazing movie.
->>> this is an awesome movie.
->>> this is an entertaining movie.
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
