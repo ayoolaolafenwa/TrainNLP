@@ -159,8 +159,8 @@ optimizer = AdamW(model.parameters(), lr=5e-5)
 accelerator = Accelerator()
 model, optimizer, train_dataloader, eval_dataloader = accelerator.prepare(model, optimizer, train_dataloader, eval_dataloader)
 
-# set the number of epochs which is set to 10 
-num_train_epochs = 10
+# set the number of epochs which is set to 6
+num_train_epochs = 6
 num_update_steps_per_epoch = len(train_dataloader)
 num_training_steps = num_train_epochs * num_update_steps_per_epoch
 
@@ -225,6 +225,7 @@ for epoch in range(num_train_epochs):
 ```
 
 Finally we train the model and used *Perplexity* as the metric for evaluating the trained models. The lower the *Perplexity* the better the model.
+We trained for 6 epochs and the lowest perplexity was *10.7*, you can train for longer epochs to get the lowest Perplexity possible.
 The model directory is *MLP_TrainedModels* where the trained models are stored. 
 **Note:** The full training code is [here](https://github.com/ayoolaolafenwa/TrainNLP/blob/main/train_masked_language_model.py)
 
