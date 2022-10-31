@@ -224,7 +224,7 @@ for pred in preds:
 
 The trained models are stored in *MLP_TrainedModels* and paste the directory to set the model value.
 We print out a list of generated sentences from the model with the appropriate value for the masked word in the sentence. 
-*Output
+### Output
 ```
 >>> this is an excellent movie.
 >>> this is an amazing movie.
@@ -234,7 +234,7 @@ We print out a list of generated sentences from the model with the appropriate v
 
 I have pushed the Masked Language Model I trained to huggingface hub and it is available for testing. Check the Masked Language Model on hugging face repository. https://huggingface.co/ayoolaolafenwa/Masked-Language-Model
 
-*Rest API Code for Testing the Masked Language Model
+### Rest API Code for Testing the Masked Language Model
 This is the inference API python code for testing the masked language model directly from hugging face.
 ``` python
 import requests
@@ -252,7 +252,7 @@ output = query({
 print(output[0]["sequence"])
 ```
 
-*Output
+### Output
 ```
 washington dc is the capital of usa.
 ```
@@ -286,7 +286,7 @@ is
 ```
 It prints out the predicted masked word *“is”*.
 
-*Colab Training
+### Colab Training
 I created a google colab notebook with steps on creating a hugging face account, training the Masked Language Model and uploading the model to Hugging Face repository. Check the notebook https://colab.research.google.com/drive/1BymoZgVU0q02zYv1SdivK-wChG-ooMXL?usp=sharing
 
 
