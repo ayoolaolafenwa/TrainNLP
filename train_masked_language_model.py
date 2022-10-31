@@ -1,7 +1,7 @@
 from datasets import load_dataset
 from transformers import AutoTokenizer
 from transformers import DataCollatorForLanguageModeling
-
+import torch
 from torch.utils.data import DataLoader
 from transformers import AutoModelForMaskedLM
 from torch.optim import AdamW
@@ -23,9 +23,6 @@ tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
 #define tokenize function to tokenize the dataset
 def tokenize_function(data):
     result = tokenizer(data["text"])
-    if tokenizer.is_fast:
-        result["word_ids"] = [result.word_ids(i) for i in range(len(result["input_ids"]))]
-
     return result
 
 # batched is set to True to activate fast multithreading!
@@ -80,7 +77,7 @@ def insert_random_mask(batch):
 
 ''' we drop the unmasked columns in the test dataset and replace them with the masked ones '''
 
-downsampled_dataset = downsampled_dataset.remove_columns(["word_ids"])
+
 eval_dataset = downsampled_dataset["test"].map(
     insert_random_mask,
     batched=True,
@@ -96,8 +93,8 @@ eval_dataset = eval_dataset.rename_columns(
 
 
 
-# set batch size to 16, a larger bacth size when using a more powerful gpu
-batch_size = 16
+# set batch size to 32, a larger bacth size when using a more powerful gpu
+batch_size = 32
 
 # load the train dataset for traing
 train_dataloader = DataLoader(downsampled_dataset["train"], shuffle=True, batch_size=batch_size, collate_fn=data_collator,)
@@ -115,15 +112,14 @@ optimizer = AdamW(model.parameters(), lr=5e-5)
 accelerator = Accelerator()
 model, optimizer, train_dataloader, eval_dataloader = accelerator.prepare(model, optimizer, train_dataloader, eval_dataloader)
 
-# set the number of epochs which is set to 10 
-num_train_epochs = 10
+# set the number of epochs which is set to 30
+num_train_epochs = 30
 num_update_steps_per_epoch = len(train_dataloader)
 num_training_steps = num_train_epochs * num_update_steps_per_epoch
 
 # define the learning rate scheduler for training
 lr_scheduler = get_scheduler("linear",optimizer=optimizer,num_warmup_steps=0,num_training_steps=num_training_steps)
 
-import torch
 
 progress_bar = tqdm(range(num_training_steps))
 
@@ -171,5 +167,3 @@ for epoch in range(num_train_epochs):
     unwrapped_model.save_pretrained(output_dir, save_function=accelerator.save)
     if accelerator.is_main_process:
         tokenizer.save_pretrained(output_dir)
-
-
