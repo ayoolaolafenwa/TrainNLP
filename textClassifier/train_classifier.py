@@ -9,11 +9,11 @@ import torch.nn as nn
 from tqdm import tqdm
 import pandas as pd
 import argparse
-import time
+
 
 # Run script to train model
 """ 
-python train_classifier.py --data AGNewsData --output_dir SavedModels --epochs 5 --batch_size 128
+python train_classifier.py --data AGNewsData --output_dir SavedModels --epochs 10 --batch_size 128
 """
 
 args = argparse.ArgumentParser()
@@ -145,6 +145,7 @@ def data_handler(batch_size, seq_len, vocab_size, text_encoder):
 
 class Trainer():
     def __init__(self) -> None:
+
         # define the maximum sentence length for texts 
         self.seq_len = 256
         # use GPT pretrained tokenizer
@@ -153,41 +154,32 @@ class Trainer():
         self.vocab_size = text_encoder.n_vocab
         # batch size for training 
         self.batch_size = parser.batch_size
-        # embedding dimension for the Transformer Classifier Model
-        self.embedding_dim = 128
+        
         # gradient clip value for clipping model gradients
         self.gradient_clip = 1.0
-
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         # learning rate for training
         self.lr = 1e-3
-
         #path to save trained models
         self.output_dir = parser.output_dir
         os.makedirs(self.output_dir, exist_ok=True)
         
         self.best_acc = 0
-      
-        
         # DataLoaders for training called from the data_handler function
-        self.train_dataloader, self.test_dataloader, self.num_classes = data_handler(self.batch_size,
-        self.seq_len, self.vocab_size, text_encoder)
-        
+        self.train_dataloader, self.test_dataloader, self.num_classes = data_handler(self.batch_size, self.seq_len, text_encoder)
         print("Dataset Classes: ", self.num_classes)
 
+
         self.model = TransformerClassifierModel(vocab_size = self.vocab_size, max_len = self.seq_len,
-         embedding_dim = self.embedding_dim, num_classes=self.num_classes)
-      
+        num_classes=self.num_classes)
         # move model to GPU
         self.model = self.model.to(self.device)
 
         # optimizer for training
         self.optimizer = Adam(self.model.parameters(), lr=self.lr)
-
         self.loss_fn = nn.CrossEntropyLoss()
-        # set the self.scalar for scaling the model's gradients to fp16
+        # set the self.scalar for scaling the model's gradients 
         self.scalar = torch.cuda.amp.GradScaler(enabled=True)
-
 
     def process_batch(self, text, label):
 

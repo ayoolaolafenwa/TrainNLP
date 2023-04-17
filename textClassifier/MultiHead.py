@@ -117,7 +117,7 @@ class TransformerEncoderBlock(nn.Module):
 
 # define class for Classifier Model
 class TransformerClassifierModel(nn.Module):
-    def __init__(self, vocab_size, max_len, embedding_dim,  depth = 6, num_classes = 4):
+    def __init__(self, vocab_size, max_len, embedding_dim = 128,  depth = 6, num_classes = 4):
         super().__init__()
         
         # define the tokenizer layer
