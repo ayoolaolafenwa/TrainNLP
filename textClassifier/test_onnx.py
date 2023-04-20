@@ -21,44 +21,32 @@ def pad_tensor(source, length, padding_value):
     return new_tensor
 
 if __name__ == "__main__":
+    # Source: https://en.wikinews.org/wiki/First_deep_space_images_from_James_Webb_Space_Telescope_released
+    sentence = """ 
+    On Monday, NASA Administrator Bill Nelson and US President Joe Biden presented the first image (see left) obtained by the Near-Infrared Camera (NIRCam), an instrument on the James Webb Space Telescope.
+    The image, named Webb's First Deep Field, shows thousands of galaxies in the SMACS 0723 galaxy cluster, about 4.6 billion light-years away from Earth. However, the area shown by the image is only a small portion of the Southern Hemisphere sky. The blended image (at left) resulted from the stitching together of numerous smaller images obtained at multiple wavelengths with far greater depth than achieved by the Hubble Space Telescope, the predecessor to James Webb.
+    The telescope entered its current orbit around the L2 Lagrange point from January 24, about 1,500,000 kilometers (932,057 mi) from Earth, on the opposite side of Earth from the Sun. This followed a month-long journey that began in late December 2021, following years of delays and several cost overruns. For its expected five- to ten-year service life, it is intended to study the most distant, and therefore the earliest galaxies formed after the Big Bang.
+    During its journey, dubbed "30 days of terror" by Sky & Telescope, the telescope successfully unfurled its 21 feet (6 m) wide mirror, deployed its sunshield and cooled down to below 50 degrees Kelvin as it traveled to the L2 Lagrange point.
+    L2 is a secure location for spacecraft where the gravitational pull of the Sun and the Earth is balanced. Full scientific operations will involve thirteen teams of scientists. The primary mission is to find the most distant and earliest galaxies formed after the Big Bang to help study the origins of the Universe. The nominal mission time is five years, with a goal of ten. The location of its orbit is very different to the Hubble Space Telescope, which orbits much closer to Earth. James Webb's instruments face away from the Sun, giving a greater clarity to the images it will obtain compared to Hubble.
+    An Ariane 5 launch vehicle carried the telescope to space on December 25 from the Guiana Space Centre in French Guiana, after arriving at the launch site in October. The launch date was delayed by a week due to unfavorable weather.
+    The United States National Aeronautics and Space Administration (NASA) began project development in 1996, planning for a launch in 2007 at a cost of USD550 million. After NASA contracted Northrop Grumman to build the telescope, mission managers estimated a 2010 launch would cost between one and 3.5 billion USD. Redesigns to reduce technical requirements pushed launch plans to 2013 for an estimated cost of USD4.5 billion. The US Congress ordered a project review in 2010 which delayed the launch again to 2015.
+    Due to an estimated cost of USD6.5 billion, the United States House Appropriations Subcommittee on Commerce, Justice, Science, and Related Agencies proposed canceling the telescope altogether in 2011. After a plan was made for a 2018 launch at a cost of USD8.8 billion, technical errors found in the telescope and the subsequent COVID-19 pandemic pushed the launch date to 2021.
+    """ 
+   
+    
     text_encoder = tiktoken.get_encoding("gpt2")
-    seq_len = 256
-
     padding_value = text_encoder.eot_token
 
-    # Source: https://en.wikinews.org/wiki/Coolum_win_tier_1_women%E2%80%99s_cricket_premiership_on_Australia%E2%80%99s_Sunshine_Coast
-    sentence = """ Coolum claimed the premiership in the top tier of women's cricket on Australia's Sunshine Coast Sunday, defeating Hinterland by 83 runs in the Grand Final.
-
-    Batting first, Coolum scored 181 runs for the loss of 3 wickets off their allotted 30 overs.
-
-    3:26
-    Interview with Coolum captain Sammy Franks.
-    Audio: Patrick Gillett.
-    3:08
-    Interview with Hinterland captain and SCCA Women's committee chair Mel Shelley.
-    Audio: Patrick Gillett.
-    Batting after Coolum, Hinterland scored 98 runs for the loss of 8 wickets.
-
-    Coolum captain Sammy Franks said: "The girls played so well today. 181 with the bat, that's pretty solid [...] We knew we had to put a lot of runs on the board. Aiming for 140, 150. But yeah. 181, that was wonderful."
-
-    Two senior Coolum players, Kerry Cowling and Paula McKie, retired after the match.
-
-    Franks continued, "It was great to win. Give Kezza and Paula a final farewell. Yeah, Paula is retiring as well. It was a little bit of a secret. She's moving on to bigger and better things. We'll miss her. She was obviously vice captain, and cricket brain and always there for me.
-
-    "Kerry's done so much for the club. All the little things that didn't get seen. Cleaning the toilets, bringing the sausages, just organising the whole team, all of the admin stuff and just being there like a cricket mum to us," she said. """
-
-
-
-    text = text_encoder.encode_ordinary(sentence)
+    text = text_encoder.encode_ordinary(sentence3)
 
     text = np.array(text).astype(np.long)
 
-
+    seq_len = 256
     text = pad_tensor(text, seq_len, padding_value)
 
     text = np.expand_dims(text, axis=0)
 
-    onnx_model = load_onnxModel("news_classifier.onnx")
+    onnx_model = load_onnxModel("news_classifier2.onnx")
     outputs = onnx_model.run(None, {"input": text})
 
     outputs = np.argmax(outputs[0], axis = 1)

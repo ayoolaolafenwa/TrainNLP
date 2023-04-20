@@ -3,7 +3,7 @@ import tiktoken
 import torch
 
 
-def load_model(model_path, vocab_size):
+def load_model(model_path, vocab_size, num_classes):
     model = TransformerClassifierModel(vocab_size = vocab_size, max_len = seq_len,
     num_classes=num_classes)
 
@@ -26,10 +26,7 @@ def pad_tensor(source, length, padding_value):
     return new_tensor
 
 
-
-if __name__ == "__main__":
-    text_encoder = tiktoken.get_encoding("gpt2")
-
+if __name__ == "__main__":  
     # Source: https://en.wikinews.org/wiki/First_deep_space_images_from_James_Webb_Space_Telescope_released
     sentence = """ 
 
@@ -50,6 +47,8 @@ if __name__ == "__main__":
     Due to an estimated cost of USD6.5 billion, the United States House Appropriations Subcommittee on Commerce, Justice, Science, and Related Agencies proposed canceling the telescope altogether in 2011. After a plan was made for a 2018 launch at a cost of USD8.8 billion, technical errors found in the telescope and the subsequent COVID-19 pandemic pushed the launch date to 2021.
     """ 
 
+    text_encoder = tiktoken.get_encoding("gpt2")
+
     text = text_encoder.encode_ordinary(sentence)
     
     seq_len = 256
@@ -57,19 +56,17 @@ if __name__ == "__main__":
     num_classes = 4
 
     vocab_size = text_encoder.n_vocab
+    
+    infer_model = load_model("news_classifier.pth", vocab_size=vocab_size, num_classes=num_classes)
     padding_value = text_encoder.eot_token
-
 
     text = torch.tensor(text, dtype=torch.long)
 
     if torch.cuda.is_available():
         text = text.cuda()
-
     text = pad_tensor(text, seq_len, padding_value)
-
+    
     text = torch.unsqueeze(text, dim = 0)
-    infer_model = load_model("news_classifier.pth", vocab_size=vocab_size)
-
     outputs = infer_model(text)
 
     # Classes: "world", "sports", "business", and "Science"

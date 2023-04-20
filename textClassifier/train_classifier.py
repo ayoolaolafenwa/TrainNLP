@@ -13,7 +13,7 @@ import argparse
 
 # Run script to train model
 """ 
-python train_classifier.py --data AGNewsData --output_dir SavedModels --epochs 10 --batch_size 128
+python train_classifier.py --data AGNewsData --output_dir SavedModels --epochs 5 --batch_size 128
 """
 
 args = argparse.ArgumentParser()
@@ -105,7 +105,7 @@ class DatasetProcessor(Dataset):
         return text, label
 
 
-def data_handler(batch_size, seq_len, vocab_size, text_encoder):
+def data_handler(batch_size, seq_len, text_encoder):
     train_iter = load_data(os.path.join(parser.data, "train.csv"))
     # load the test data
     test_iter = load_data(os.path.join(parser.data, "test.csv"))
@@ -277,6 +277,3 @@ class Trainer():
 if __name__ == "__main__":
     trainer = Trainer()
     trainer.train()
-  
-
-

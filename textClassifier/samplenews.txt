@@ -1,3 +1,4 @@
+https://en.wikinews.org/wiki/Category:Sports
 """ Coolum claimed the premiership in the top tier of women's cricket on Australia's Sunshine Coast Sunday, defeating Hinterland by 83 runs in the Grand Final.
 
 Batting first, Coolum scored 181 runs for the loss of 3 wickets off their allotted 30 overs.
@@ -19,7 +20,7 @@ Franks continued, "It was great to win. Give Kezza and Paula a final farewell. Y
 "Kerry's done so much for the club. All the little things that didn't get seen. Cleaning the toilets, bringing the sausages, just organising the whole team, all of the admin stuff and just being there like a cricket mum to us," she said. """
 
 
-
+https://en.wikinews.org/wiki/Category:Science_and_technology
 """ On Monday, NASA Administrator Bill Nelson and US President Joe Biden presented the first image (see left) obtained by the Near-Infrared Camera (NIRCam), an instrument on the James Webb Space Telescope.
 
 The image, named Webb's First Deep Field, shows thousands of galaxies in the SMACS 0723 galaxy cluster, about 4.6 billion light-years away from Earth. However, the area shown by the image is only a small portion of the Southern Hemisphere sky. The blended image (at left) resulted from the stitching together of numerous smaller images obtained at multiple wavelengths with far greater depth than achieved by the Hubble Space Telescope, the predecessor to James Webb.
@@ -36,17 +37,5 @@ The United States National Aeronautics and Space Administration (NASA) began pro
 
 Due to an estimated cost of USD6.5 billion, the United States House Appropriations Subcommittee on Commerce, Justice, Science, and Related Agencies proposed canceling the telescope altogether in 2011. After a plan was made for a 2018 launch at a cost of USD8.8 billion, technical errors found in the telescope and the subsequent COVID-19 pandemic pushed the launch date to 2021.
 """
-
-
-
-""" On Friday, the International Labour Organization (ILO) elected former Prime Minister of Togo Gilbert Houngbo its next director general, the first African to serve the role since the organization was founded in 1919.
-
-Houngbo, aged 61, was elected via secret ballot by the United Nations agency’s 56-member governing body in the second round with 30 votes. The runner-up was former French Minister of Labor Muriel Pénicaud, who received 23 votes. Former South Korean foreign minister Kang Kyung-wha received two votes and South African businessman Mthunzi Mdwaba received one.
-
-The current deputy director-general, Australian Greg Vines, was eliminated in the first round.
-
-The ILO governing body is composed of government, employee, and employer representatives from its 187 member states. It decides the ILO's policy, sets its agenda, and elects the director-general.
-
-Houngbo was previously deputy director-general of the ILO from 2013 to 2017, and currently leads the International Fund for Agricultural Development (IFAD). He will succeed Guy Ryder as director-general from October 1, 2022."""
 
 
