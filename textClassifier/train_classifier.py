@@ -3,7 +3,7 @@ from torch.utils.data import Dataset, DataLoader
 from torch.optim import Adam
 import os
 import tiktoken
-from MultiHead import TransformerClassifierModel
+from transformer_encoder import TransformerClassifierModel
 from pathlib import Path
 import torch.nn as nn
 from tqdm import tqdm

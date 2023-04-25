@@ -1,4 +1,4 @@
-from MultiHead import TransformerClassifierModel
+from transformer_encoder import TransformerClassifierModel
 import tiktoken
 import torch
 
@@ -67,6 +67,8 @@ if __name__ == "__main__":
     text = pad_tensor(text, seq_len, padding_value)
     
     text = torch.unsqueeze(text, dim = 0)
+
+    print("text shape: ", text.shape)
     outputs = infer_model(text)
 
     # Classes: "world", "sports", "business", and "Science"
